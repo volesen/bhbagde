@@ -28,9 +28,9 @@ fn main() -> ! {
     let mut red_led = pins.a1.into_open_drain_output(&mut pins.port);
     let mut delay = Delay::new(core.SYST, &mut clocks);
     loop {
-        delay.delay_ms(200u8);
+        delay.delay_ms(30u32);
         red_led.set_high().unwrap();
-        delay.delay_ms(200u8);
+        delay.delay_ms(30u32);
         red_led.set_low().unwrap();
     }
 }

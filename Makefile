@@ -1,7 +1,5 @@
 upload: build
-	stty -F /dev/ttyACM0 ospeed 1200
-	stty -F /dev/ttyACM0 ospeed 1200
-	./tools/bossac -e -w -v -b ./main.bin
+	stty -F /dev/ttyACM0 ospeed 1200 | ./tools/bossac -e -w -v -b ./main.bin
 
 build: src/*.rs
 	echo "building"
@@ -9,6 +7,3 @@ build: src/*.rs
 	echo "stripping"
 	arm-none-eabi-objcopy -O binary ./target/thumbv6m-none-eabi/debug/metro_m0 ./main.bin
 
-make clean:
-	rm target
-	rm main.bin
