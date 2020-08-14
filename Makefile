@@ -9,3 +9,6 @@ build: src/*.rs
 	echo "stripping"
 	arm-none-eabi-objcopy -O binary ./target/thumbv6m-none-eabi/debug/metro_m0 ./main.bin
 
+make clean:
+	rm target
+	rm main.bin
