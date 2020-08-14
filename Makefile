@@ -1,14 +1,11 @@
-release: main.uf2
-	echo "uploading"
-	cp main.uf2 /media/volesen/BHBADGEBOOT/
+upload: build
+	stty -F /dev/ttyACM0 ospeed 1200
+	stty -F /dev/ttyACM0 ospeed 1200
+	./tools/bossac -e -w -v -b ./main.bin
 
-main.uf2: main.bin
-	echo "packing"
-	uf2conv main.bin --base 0x2000 --output main.uf2
-
-main.bin: src/*.rs
+build: src/*.rs
 	echo "building"
-	cargo objcopy --features unproven --release -- -O binary main.bin
+	cargo build
+	echo "stripping"
+	arm-none-eabi-objcopy -O binary ./target/thumbv6m-none-eabi/debug/metro_m0 ./main.bin
 
-clean:
-	rm main.bin main.uf2
