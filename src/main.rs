@@ -119,6 +119,11 @@ fn set_led_xy<I2C: i2c::Write>(i2c: &mut I2C, x: u8, y: u8, frame: u8, value: u8
     write_register8(i2c, frame, 0x24 + x + y * 16, value);
 }
 
+fn read_register<I2C: i2c::Read>(i2c: &mut I2C, reg: u8, d: &mut [u8]){
+    i2c.read(reg, d);
+    d
+}
+
 // fn fill<I2C: i2c::Write>(i2c: &mut I2C, value){
 //     select_bank(i2c, 0);
 //     for i in 0..6{
@@ -144,7 +149,7 @@ fn _init<I2C: i2c::Write>(i2c: &mut I2C, delay: &mut Delay) {
     }
 
     // Turn off audio sync
-    write_register8(i2c, BANK_FUNCTIONREG, REG_AUDIOSYNC, 0x0);
+    write_register8(i2c, BANK_FUNCTIONREG, REG_AUDIOSYNC, 0x00);
 }
 
 
@@ -175,16 +180,29 @@ fn main() -> ! {
     );
     // https://github.com/qmk/qmk_firmware/blob/master/drivers/issi/is31fl3731.c
 
-    _init(&mut i2c, &mut delay);
+    //_init(&mut i2c, &mut delay);
+    //write_register8(i2c, BANK_FUNCTIONREG, REG_SHUTDOWN, 0x0);
+
 
     // fill(i2c, 127);
     // set_led_xy(&mut i2c, 5, 5, 0, 240);
-    write_register(&mut i2c, 5, 0xff);
-    
+    //write_register(&mut i2c, 5, 0xff);
+    let mut d: [u8; 1] = [0];
+    read_register(&mut i2c, REG_SHUTDOWN, d);
+    let ms: u32 = 1000u32;
+    match d[0]{
+        0x0 => {
+            ms = 200u32;
+        }
+        0x1 => {
+            ms = 20u32;
+        }
+    }
+
     loop {
-        delay.delay_ms(100u32);
+        delay.delay_ms(ms);
         red_led.set_high().unwrap();
-        delay.delay_ms(100u32);
+        delay.delay_ms(ms);
         red_led.set_low().unwrap();
     }
 }
